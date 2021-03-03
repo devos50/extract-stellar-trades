@@ -1,2 +1,4 @@
 trades.csv
+trade_values.csv
 .idea/**
+*.DS_Store
