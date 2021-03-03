@@ -10,6 +10,23 @@ if not os.path.exists("current_url.txt"):
     print("current_url.txt does not exist!")
     exit(1)
 
+addresses = {}
+next_identity = 1
+
+if os.path.exists("identities.csv"):
+    with open("identities.csv") as identities_file:
+        parsed_header = False
+        for line in identities_file.readlines():
+            if not parsed_header:
+                parsed_header = True
+                continue
+
+            parts = line.strip().split(",")
+            address_id = int(parts[0])
+            addresses[parts[1]] = address_id
+            if address_id >= next_identity:
+                next_identity = address_id + 1
+
 current_url = None
 with open("current_url.txt") as url_file:
     current_url = url_file.read().strip()
@@ -47,7 +64,23 @@ while True:
             else:
                 counter_asset_code = trade["counter_asset_code"]
 
-            trades_file.write("%s,%s,%s,%s,%s,%s,%s\n" % (trade["ledger_close_time"], base_asset_code, base_amount, counter_asset_code, counter_amount, trade["base_account"], trade["counter_account"]))
+            base_address = trade["base_account"]
+            counter_address = trade["counter_account"]
+
+            if base_address not in addresses:
+                addresses[base_address] = next_identity
+                with open("identities.csv", "a") as identities_file:
+                    identities_file.write("%d,%s\n" % (next_identity, base_address))
+                    next_identity += 1
+            if counter_address not in addresses:
+                addresses[counter_address] = next_identity
+                with open("identities.csv", "a") as identities_file:
+                    identities_file.write("%d,%s\n" % (next_identity, counter_address))
+                    next_identity += 1
+
+            trades_file.write("%s,%s,%s,%s,%s,%s,%s\n" % (
+                trade["ledger_close_time"], base_asset_code, base_amount, counter_asset_code, counter_amount,
+                addresses[base_address], addresses[counter_address]))
 
     # Get the next URL
     next_url = json_response["_links"]["next"]["href"]
