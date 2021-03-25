@@ -80,8 +80,8 @@ while True:
             order_type = "buy" if operation["type"] == "manage_buy_offer" else "sell"
 
             offers_file.write("%s,%s,%d,%s,%s,%f,%f,%d\n" % (order_type, operation["created_at"],
-                                                             addresses[creator_address], selling_asset_type,
-                                                             buying_asset_type, amount, price, offer_id))
+                                                             addresses[creator_address], selling_asset_code,
+                                                             buying_asset_code, amount, price, offer_id))
             num_offers += 1
 
         print("Offers in this batch: %d" % num_offers)
