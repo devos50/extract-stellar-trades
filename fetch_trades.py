@@ -1,5 +1,5 @@
 """
-Scrape orders published on the Stellar blockchain.
+Scrape trades published on the Stellar blockchain.
 """
 import os
 from time import sleep
